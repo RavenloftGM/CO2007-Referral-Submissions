@@ -1,1 +1,2 @@
-temp/src/env.php
+# Ignore database login details
+src/env.php
