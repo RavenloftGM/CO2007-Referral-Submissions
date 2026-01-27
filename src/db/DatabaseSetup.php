@@ -77,7 +77,7 @@ class DatabaseSetup {
             referral_id INT PRIMARY KEY,
             pyhysician_name VARCHAR(30) NOT NULL,
             clinic_name VARCHAR(30) NOT NULL,
-            patient_name VARCHAR(30) NOT NULL
+            patient_name VARCHAR(30) NOT NULL,
             patient_dob DATE NOT NULL,
             urgency_level VARCHAR(30) NOT NULL,
             referral_reason TEXT
