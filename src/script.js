@@ -17,74 +17,94 @@ const fields = {
         errorMsg: "Clinic name must be at least 3 characters.",
         touched: false
     },
+    ref_phone: {
+        el: form.ref_phone,
+        validator: val => /^((\\+44\\s?|0)7\\d{3}\\s?\\d{6}|(\\+44\\s?|0)1\\d{2,4}\\s?\\d{5,7})$/.test(val.replace(/\s+/g, '')),
+        errorEl: document.getElementById("errorPhone"),
+        errorMsg: "Please enter a valid UK phone number.",
+        touched: false
+    },
+    ref_email: {
+        el: form.ref_email,
+        validator: val => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val),
+        errorEl: document.getElementById("errorEmail"),
+        errorMsg: "Please enter a valid email address.",
+        touched: false
+    },
+    ref_fax: {
+        el: form.ref_fax,
+        validator: val => val.trim() === "" || /^[0-9\s\-+()]{7,20}$/.test(val),
+        errorEl: document.getElementById("errorFax"),
+        errorMsg: "Please enter a valid fax number or leave blank.",
+        touched: false
+    },
     patient_name: {
         el: form.patient_name,
-        validator: val => val.trim().length >= 5 && val.trim().split(" ").length >= 2,
+        validator: val => val.trim().split(/\s+/).length >= 2 && val.trim().length >= 5,
         errorEl: document.getElementById("errorPatient"),
-        errorMsg: "Full name must be at least 5 characters and include at least 2 names.",
+        errorMsg: "Enter at least two names (First and Last).",
         touched: false
     },
     patient_dob: {
         el: form.patient_dob,
-        validator: val => val && new Date(val) < new Date(),
+        validator: val => val !== "" && new Date(val) < new Date(),
         errorEl: document.getElementById("errorDob"),
-        errorMsg: "Date of birth must be before today.",
+        errorMsg: "Date of birth must be in the past.",
         touched: false
     },
+    // ADDED: Urgency Validation
     urgency: {
         el: form.urgency,
         validator: val => val !== "",
         errorEl: document.getElementById("errorUrgency"),
         errorMsg: "Please select an urgency level.",
         touched: false
+    },
+    // ADDED: Reason/Notes Validation
+    reason: {
+        el: form.reason,
+        validator: val => val.trim().length >= 10,
+        errorEl: document.getElementById("errorReason"),
+        errorMsg: "Please provide a brief reason (min 10 chars).",
+        touched: false
     }
 };
 
-// Validate a single field and optionally show error
-function validateField(field) {
-    const value = field.el.value;
-    const isValid = field.validator(value);
+// ... keep existing validateField and validateAllFields functions ...
 
-    if (field.touched) {
-        field.errorEl.textContent = isValid ? "" : field.errorMsg;
-    } else {
-        field.errorEl.textContent = ""; // hide error if not touched
-    }
+// ADDED: Real-time Character Counter Logic
+const textarea = form.reason;
+const charCount = document.getElementById("charCount");
 
-    return isValid;
-}
-
-// Validate all fields, update progress
-function validateAllFields() {
-    let validCount = 0;
-    const total = Object.keys(fields).length;
-
-    Object.values(fields).forEach(field => {
-        if (validateField(field)) validCount++;
-    });
-
-    progressBar.style.width = (validCount / total) * 100 + "%";
-
-    return validCount === total;
-}
+textarea.addEventListener("input", () => {
+    const remaining = 500 - textarea.value.length;
+    charCount.textContent = `${remaining} characters remaining`;
+    
+    // Visual cue if running out of space
+    charCount.style.color = remaining < 50 ? "#d93025" : "#666";
+});
 
 // Attach listeners for focus/typing
 Object.values(fields).forEach(field => {
     field.el.addEventListener("input", () => {
-        field.touched = true; // mark as touched when user types
+        field.touched = true; 
         validateAllFields();
     });
     field.el.addEventListener("blur", () => {
-        field.touched = true; // mark as touched when leaving field
+        field.touched = true; 
         validateAllFields();
     });
 });
 
-// Form submission: mark all as touched to show errors if invalid
-form.addEventListener("submit", function(e) {
-    Object.values(fields).forEach(field => (field.touched = true));
-    if (!validateAllFields()) e.preventDefault();
+form.addEventListener("submit", (e) => {
+    Object.values(fields).forEach(f => f.touched = true);
+    if (!validateAllFields()) {
+        e.preventDefault();
+        // Scroll to the first error
+        const firstError = document.querySelector(".error:not(:empty)");
+        if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
 });
 
-// Initialize progress bar (no errors yet)
+// Initialize progress bar on load
 validateAllFields();

@@ -169,3 +169,16 @@ button:hover {
 }
 
 /* Keep previous tooltip styles intact */
+
+/* Update the contact-grid in style.css */
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+/* Ensure inputs don't overflow their containers */
+.form-group input {
+    box-sizing: border-box; 
+}

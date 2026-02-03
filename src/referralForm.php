@@ -14,18 +14,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-
-    <div class="container success">
-        <h2>Referral Submitted ✓</h2>
-        <p>
-            The referral for <strong><?= $patient ?></strong> has been successfully
-            submitted and sent to the triage team.
-        </p>
-        <a href="referralForm.php">
-            <button>Submit Another Referral</button>
-        </a>
-    </div>
-
+        <div class="container success">
+            <h2>Referral Submitted ✓</h2>
+            <p>
+                The referral for <strong><?= $patient ?></strong> has been successfully
+                submitted and sent to the triage team.
+            </p>
+            <a href="referralForm.php">
+                <button>Submit Another Referral</button>
+            </a>
+        </div>
     </body>
     </html>
     <?php exit;
@@ -42,85 +40,113 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 <body>
 
-<div class="container">
-    <h2>Patient Referral Form</h2>
+    <div class="container">
+        <h2>Patient Referral Form</h2>
 
-    <div class="progress-container">
-        <div class="progress-bar" id="progressBar"></div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <form action="processReferral.php" method="POST" id="referralForm" novalidate>
+
+            <h3>Referring Physician</h3>
+            <div class="form-group">
+                <label>
+                    Physician Name
+                    <span class="required-star" data-tooltip="Enter the full name of the referring physician (e.g. Dr. Jane Smith).">*</span>
+                </label>
+                <input type="text" name="ref_physician" required>
+                <div class="error" id="errorPhysician"></div>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    Clinic Name
+                    <span class="required-star" data-tooltip="Name of the clinic or medical practice submitting the referral.">*</span>
+                </label>
+                <input type="text" name="ref_clinic" required>
+                <div class="error" id="errorClinic"></div>
+            </div>
+
+            <hr>
+
+            <h3>Contact Information</h3>
+            <div class="contact-grid">
+                <div class="form-group">
+                    <label>
+                        Phone Number 
+                        <span class="required-star" data-tooltip="Primary contact number.">*</span>
+                    </label>
+                    <input type="tel" name="ref_phone" placeholder="07123 456789" required>
+                    <div class="error" id="errorPhone"></div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        Email Address 
+                        <span class="required-star" data-tooltip="Professional email for correspondence.">*</span>
+                    </label>
+                    <input type="email" name="ref_email" placeholder="doctor@clinic.com" required>
+                    <div class="error" id="errorEmail"></div>
+                </div>
+                <div class="form-group">
+                    <label>Fax Number</label>
+                    <input type="tel" name="ref_fax" placeholder="0161 123 4567">
+                    <div class="error" id="errorFax"></div>
+                </div>
+            </div>
+
+            <hr>
+
+            <h3>Patient Details</h3>
+            <div class="form-group">
+                <label>
+                    Full Name
+                    <span class="required-star" data-tooltip="Patient’s legal first and last name as it appears in records.">*</span>
+                </label>
+                <input type="text" name="patient_name" required>
+                <div class="error" id="errorPatient"></div>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    Date of Birth
+                    <span class="required-star" data-tooltip="Patient’s date of birth (must be before today).">*</span>
+                </label>
+                <input type="date" name="patient_dob" required>
+                <div class="error" id="errorDob"></div>
+            </div>
+
+            <hr>
+
+            <h3>Clinical Information</h3>
+            <div class="form-group">
+                <label>
+                    Urgency Level
+                    <span class="required-star" data-tooltip="Select how quickly the patient needs to be seen.">*</span>
+                </label>
+                <select name="urgency" required>
+                    <option value="">Select urgency</option>
+                    <option value="Routine">Routine</option>
+                    <option value="Urgent">Urgent (24–48 hours)</option>
+                    <option value="STAT">STAT</option>
+                </select>
+                <div class="error" id="errorUrgency"></div>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    Notes / Reason for Referral
+                    <span class="required-star" data-tooltip="Brief clinical history, symptoms, or reason for referral (max 500 characters).">*</span>
+                </label>
+                <textarea name="reason" maxlength="500" placeholder="Brief clinical history (max 500 characters)"></textarea>
+                <small id="charCount">500 characters remaining</small>
+                <div class="error" id="errorReason"></div>
+            </div>
+
+            <button type="submit">Submit Referral</button>
+        </form>
     </div>
 
-    <form action="referralForm.php" method="POST" id="referralForm" novalidate>
-
-        <h3>Referring Physician</h3>
-        <div class="form-group">
-            <label>
-                Physician Name
-                <span class="required-star" data-tooltip="Enter the full name of the referring physician (e.g. Dr. Jane Smith).">*</span>
-            </label>
-            <input type="text" name="ref_physician" required>
-            <div class="error" id="errorPhysician"></div>
-        </div>
-
-        <div class="form-group">
-            <label>
-                Clinic Name
-                <span class="required-star" data-tooltip="Name of the clinic or medical practice submitting the referral.">*</span>
-            </label>
-            <input type="text" name="ref_clinic" required>
-            <div class="error" id="errorClinic"></div>
-        </div>
-
-        <hr>
-
-        <h3>Patient Details</h3>
-        <div class="form-group">
-            <label>
-                Full Name
-                <span class="required-star" data-tooltip="Patient’s legal first and last name as it appears in records.">*</span>
-            </label>
-            <input type="text" name="patient_name" required>
-            <div class="error" id="errorPatient"></div>
-        </div>
-
-        <div class="form-group">
-            <label>
-                Date of Birth
-                <span class="required-star" data-tooltip="Patient’s date of birth (must be before today).">*</span>
-            </label>
-            <input type="date" name="patient_dob" required>
-            <div class="error" id="errorDob"></div>
-        </div>
-
-        <hr>
-
-        <h3>Clinical Information</h3>
-        <div class="form-group">
-            <label>
-                Urgency Level
-                <span class="required-star" data-tooltip="Select how quickly the patient needs to be seen.">*</span>
-            </label>
-            <select name="urgency" required>
-                <option value="">Select urgency</option>
-                <option value="Routine">Routine</option>
-                <option value="Urgent">Urgent (24–48 hours)</option>
-                <option value="STAT">STAT</option>
-            </select>
-            <div class="error" id="errorUrgency"></div>
-        </div>
-
-        <div class="form-group">
-            <label>
-                Notes / Reason for Referral
-                <span class="required-star" data-tooltip="Brief clinical history, symptoms, or reason for referral (max 500 characters).">*</span>
-            </label>
-            <textarea name="reason" maxlength="500" placeholder="Brief clinical history (max 500 characters)"></textarea>
-            <div class="error" id="errorReason"></div>
-        </div>
-
-        <button type="submit">Submit Referral</button>
-    </form>
-</div>
-
-<script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
