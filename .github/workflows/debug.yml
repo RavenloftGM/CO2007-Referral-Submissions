@@ -1,4 +1,5 @@
 name: Debug password length 
-run: echo "Password length: ${#FTP_PASSWORD}" 
+run: | 
+  echo "Password length: ${#FTP_PASSWORD}" 
 env: 
   FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
