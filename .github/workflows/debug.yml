@@ -1,5 +1,14 @@
-name: Debug password length 
-run: | 
-  echo "Password length: ${#FTP_PASSWORD}" 
-env: 
-  FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+name: Debug password length
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check-secret-length:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show password length
+        run: |
+          echo "Password length: ${#FTP_PASSWORD}"
+        env:
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
